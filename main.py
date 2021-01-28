@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Form
+from fastapi import FastAPI, HTTPException, Form, UploadFile, File
 from pydantic import BaseModel
 from typing import Optional, List
 import pandas as pd
@@ -17,6 +17,14 @@ Db = []
 @app.get('/')
 async def index():
     return({"Status" : 200, "Output" : "Sever is running..."})
+
+@app.post("/uploadfile/")
+def create_upload_file(file: UploadFile = File(...)):
+    # contents = await file.read()
+    if file.filename.endswith('.csv'):
+        df = pd.read_csv(file.file)
+        contents = df.to_dict('record')
+        return {"filename": file.filename, "Content": contents}
 
 @app.get('/students')
 def getAllStudents():
